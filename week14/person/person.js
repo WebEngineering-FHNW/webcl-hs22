@@ -73,32 +73,23 @@ const MasterView = (listController, selectionController, rootElement) => {
     selectionController.onModelSelected(selectListItemForModel(ALL_ATTRIBUTE_NAMES));
 };
 
-const unsetQualifiers = person => {
-    person.firstname.setQualifier(undefined);  // todo: make generic, unset all qualifiers
-    person.lastname .setQualifier(undefined);
-    person.language .setQualifier(undefined);
-    return person;
-};
-const unsetValues = person => {
-    person.firstname.setConvertedValue("");// todo: make generic, unset all values
-    person.lastname .setConvertedValue("");
-    person.language .setConvertedValue("");
-    return person;
-};
 const reset = person => {
-    unsetQualifiers(person);
-    unsetValues(person);
+    ALL_ATTRIBUTE_NAMES.forEach( name => {
+        person[name].setQualifier(undefined);
+        person[name].setConvertedValue("");
+    });
     return person;
 };
 
 const noPerson = reset(Person());
-noPerson.detailed .getObs(VALUE).setValue(false);         // the noPerson cannot be shown in the detail view
-noPerson.firstname.getObs(EDITABLE).setValue(false);      // and it cannot be edited
-noPerson.lastname .getObs(EDITABLE).setValue(false);
-noPerson.language .getObs(EDITABLE).setValue(false);
+ALL_ATTRIBUTE_NAMES.forEach( name => {
+    noPerson[name].setQualifier("Person.none."+name);
+    noPerson[name].getObs(EDITABLE).setValue(false);
+});
+noPerson.detailed.setQualifier("Person.none.detailed");
+noPerson.detailed.getObs(VALUE).setValue(false);
 
 const selectionMold = reset(Person());
-selectionMold.detailed.getObs(VALUE).onChange( detailed => detailed ? undefined : unsetValues(selectionMold) );
 
 const DetailView = (selectionController, rootElement) => {
 
